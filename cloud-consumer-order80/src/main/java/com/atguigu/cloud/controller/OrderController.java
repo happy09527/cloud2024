@@ -2,11 +2,16 @@ package com.atguigu.cloud.controller;
 
 import com.atguigu.cloud.entities.PayDTO;
 import com.atguigu.cloud.resp.ResultData;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 /**
  * @author: ZhangX
@@ -16,7 +21,7 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 public class OrderController {
 //    public static final String PaymentSrv_URL = "http://localhost:8001";//先写死，硬编码
-    public static final String PaymentSrv_URL = "http://cloud-payment-service";//先写死，硬编码
+    public static final String PaymentSrv_URL = "http://cloud-payment-service";// 获取consul服务器上的应用地址
 
     @Autowired
     private RestTemplate restTemplate;
@@ -38,5 +43,32 @@ public class OrderController {
     @GetMapping("/consumer/pay/get/{id}")
     public ResultData getPayInfo(@PathVariable("id") Integer id) {
         return restTemplate.getForObject(PaymentSrv_URL + "/pay/get/" + id, ResultData.class, id);
+    }
+
+
+    @GetMapping(value = "/consumer/pay/get/info")
+    private String getInfoByConsul()
+    {
+        return restTemplate.getForObject(PaymentSrv_URL + "/pay/get/info", String.class);
+    }
+
+    @Resource
+    private DiscoveryClient discoveryClient;
+    @GetMapping("/consumer/discovery")
+    public String discovery()
+    {
+        List<String> services = discoveryClient.getServices();
+        for (String element : services) {
+            System.out.println(element);
+        }
+
+        System.out.println("===================================");
+
+        List<ServiceInstance> instances = discoveryClient.getInstances("cloud-payment-service");
+        for (ServiceInstance element : instances) {
+            System.out.println(element.getServiceId()+"\t"+element.getHost()+"\t"+element.getPort()+"\t"+element.getUri());
+        }
+
+        return instances.get(0).getServiceId()+":"+instances.get(0).getPort();
     }
 }
