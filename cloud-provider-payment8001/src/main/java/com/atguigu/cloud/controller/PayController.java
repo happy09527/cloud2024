@@ -11,6 +11,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author: ZhangX
  * @createDate: 2024/11/25
@@ -46,6 +48,11 @@ public class PayController {
 
     @GetMapping("/pay/get/{id}")
     public ResultData getById(@PathVariable("id") Integer id) {
+        try{
+            TimeUnit.SECONDS.sleep(62);
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return ResultData.success(payService.getById(id));
     }
 
@@ -72,6 +79,6 @@ public class PayController {
 
     @RequestMapping(value = "/pay/get/info", method = RequestMethod.GET)
     public ResultData get(@Value("${atguigu.info}") String info) {
-        return ResultData.success(info + port);
+        return ResultData.success("info:" + info + port);
     }
 }

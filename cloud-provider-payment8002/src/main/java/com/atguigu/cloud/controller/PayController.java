@@ -72,7 +72,7 @@ public class PayController {
     ;
     @RequestMapping(value = "/pay/get/info", method = RequestMethod.GET)
     public ResultData get(@Value("${atguigu.info}") String info, @Value("${atguigu.info1}") String info1) {
-        return ResultData.success(info + port + info1);
+        return ResultData.success("info:" + info + port + info1);
     }
 }
 
