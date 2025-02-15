@@ -38,6 +38,7 @@ public class OrderController {
         try {
             System.out.println("调用开始：" + DateUtil.now());
             resultData = payFeignApi.getPayInfo(id);
+            System.out.println(resultData);
         }catch (Exception e) {
             e.printStackTrace();
             System.out.println("调用结束：" + DateUtil.now());

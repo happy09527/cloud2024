@@ -17,11 +17,29 @@ spring:
         config:
           default:
             #连接超时时间
-            connectTimeout: 3000
+            connectTimeout: 2000
             #读取超时时间
-            readTimeout: 3000
+            readTimeout: 2000
+      httpclient:
+        hc5:
+          enabled: true
           cloud-payment-service:
             #连接超时时间
-            connectTimeout: 8000
+            connectTimeout: 2000
             #读取超时时间
-            readTimeout: 8000
+            readTimeout: 2000
+      compression:
+        request:
+          enabled: true
+          min-request-size: 2048 #最小压缩字节数
+          mime-types: application/json,application/xml,text/xml #压缩类型
+        response:
+          enabled: true
+#日志打印
+#logging:
+#  level:
+#    com:
+#      atguigu:
+#        cloud:
+#          api:
+#            PayFeignApi: debug
