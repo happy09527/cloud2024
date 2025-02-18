@@ -1,5 +1,6 @@
 package com.atguigu.cloud.controller;
 
+import cn.hutool.core.util.IdUtil;
 import com.atguigu.cloud.entities.Pay;
 import com.atguigu.cloud.entities.PayDTO;
 import com.atguigu.cloud.resp.ResultData;
@@ -80,6 +81,21 @@ public class PayController {
     @RequestMapping(value = "/pay/get/info", method = RequestMethod.GET)
     public ResultData get(@Value("${atguigu.info}") String info, @Value("${atguigu.info1}") String info1) {
         return ResultData.success("info:" + info + port + info1);
+    }
+
+
+    //=========Resilience4j CircuitBreaker 的例子
+    @GetMapping(value = "/pay/circuit/{id}")
+    public String myCircuit(@PathVariable("id") Integer id) {
+        if (id == -4) throw new RuntimeException("----circuit id 不能负数");
+        if (id == 9999) {
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return "Hello, circuit! inputId:  " + id + " \t " + IdUtil.simpleUUID();
     }
 }
 

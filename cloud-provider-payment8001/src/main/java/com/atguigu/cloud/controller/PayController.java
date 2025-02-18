@@ -1,5 +1,6 @@
 package com.atguigu.cloud.controller;
 
+import cn.hutool.core.util.IdUtil;
 import com.atguigu.cloud.entities.Pay;
 import com.atguigu.cloud.entities.PayDTO;
 import com.atguigu.cloud.resp.ResultData;
@@ -48,9 +49,9 @@ public class PayController {
 
     @GetMapping("/pay/get/{id}")
     public ResultData getById(@PathVariable("id") Integer id) {
-        try{
+        try {
             TimeUnit.SECONDS.sleep(62);
-        }catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return ResultData.success(payService.getById(id));
@@ -80,5 +81,19 @@ public class PayController {
     @RequestMapping(value = "/pay/get/info", method = RequestMethod.GET)
     public ResultData get(@Value("${atguigu.info}") String info) {
         return ResultData.success("info:" + info + port);
+    }
+
+    //=========Resilience4j CircuitBreaker 的例子
+    @GetMapping(value = "/pay/circuit/{id}")
+    public String myCircuit(@PathVariable("id") Integer id) {
+        if (id == -4) throw new RuntimeException("----circuit id 不能负数");
+        if (id == 9999) {
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return "Hello, circuit! inputId:  " + id + " \t " + IdUtil.simpleUUID();
     }
 }
