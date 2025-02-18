@@ -5,6 +5,7 @@ import com.atguigu.cloud.api.PayFeignApi;
 import com.atguigu.cloud.entities.PayDTO;
 import com.atguigu.cloud.resp.ResultData;
 import com.atguigu.cloud.resp.ReturnCodeEnum;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: ZhangX
@@ -69,5 +72,45 @@ public class OrderController {
     public String myCircuitFallback(Integer id, Throwable t) {
         // 这里是容错处理逻辑，返回备用结果
         return "myCircuitFallback，系统繁忙，请稍后再试-----/(ㄒoㄒ)/~~";
+    }
+
+    /**
+     * (船的)舱壁,隔离
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/feign/pay/bulkhead1/{id}")
+    @Bulkhead(name = "cloud-payment-service", fallbackMethod = "myBulkheadFallback", type = Bulkhead.Type.SEMAPHORE)
+    public String myBulkhead1(@PathVariable("id") Integer id) {
+        return payFeignApi.myBulkhead(id);
+    }
+
+    public String myBulkheadFallback(Throwable t) {
+        return "myBulkheadFallback，隔板超出最大数量限制，系统繁忙，请稍后再试-----/(ㄒoㄒ)/~~";
+    }
+
+    /**
+     * (船的)舱壁,隔离,THREADPOOL
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/feign/pay/bulkhead/{id}")
+    @Bulkhead(name = "cloud-payment-service", fallbackMethod = "myBulkheadPoolFallback", type = Bulkhead.Type.THREADPOOL)
+    public CompletableFuture<String> myBulkheadTHREADPOOL(@PathVariable("id") Integer id) {
+        System.out.println(Thread.currentThread().getName() + "\t" + "enter the method!!!");
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(Thread.currentThread().getName() + "\t" + "exist the method!!!");
+
+        return CompletableFuture.supplyAsync(() -> payFeignApi.myBulkhead(id) + "\t" + " Bulkhead.Type.THREADPOOL");
+    }
+
+    public CompletableFuture<String> myBulkheadPoolFallback(Integer id, Throwable t) {
+        return CompletableFuture.supplyAsync(() -> "Bulkhead.Type.THREADPOOL，系统繁忙，请稍后再试-----/(ㄒoㄒ)/~~");
     }
 }
