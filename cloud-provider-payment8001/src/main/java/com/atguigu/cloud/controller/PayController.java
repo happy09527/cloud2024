@@ -110,4 +110,13 @@ public class PayController {
 
         return "Hello, bulkhead! inputId:  "+id+" \t " + IdUtil.simpleUUID();
     }
+
+    //=========Resilience4j ratelimit 的例子
+    @GetMapping(value = "/pay/ratelimit/{id}")
+    public String myRatelimit(@PathVariable("id") Integer id)
+    {
+        return "Hello, myRatelimit欢迎到来 inputId:  "+id+" \t " + IdUtil.simpleUUID();
+    }
+
+
 }
