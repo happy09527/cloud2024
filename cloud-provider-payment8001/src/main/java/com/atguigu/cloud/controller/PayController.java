@@ -118,5 +118,14 @@ public class PayController {
         return "Hello, myRatelimit欢迎到来 inputId:  "+id+" \t " + IdUtil.simpleUUID();
     }
 
-
+    /**
+     * Micrometer(Sleuth)进行链路监控的例子
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/pay/micrometer/{id}")
+    public String myMicrometer(@PathVariable("id") Integer id)
+    {
+        return "Hello, 欢迎到来myMicrometer8001 inputId:  "+id+" \t    服务返回:" + IdUtil.simpleUUID();
+    }
 }

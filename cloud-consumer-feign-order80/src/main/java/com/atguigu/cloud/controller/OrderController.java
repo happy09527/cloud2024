@@ -116,15 +116,18 @@ public class OrderController {
     }
 
     @GetMapping(value = "/feign/pay/ratelimit/{id}")
-    @RateLimiter(name = "cloud-payment-service",fallbackMethod = "myRatelimitFallback")
-    public String myBulkhead(@PathVariable("id") Integer id)
-    {
+    @RateLimiter(name = "cloud-payment-service", fallbackMethod = "myRatelimitFallback")
+    public String myBulkhead(@PathVariable("id") Integer id) {
         return payFeignApi.myRatelimit(id);
     }
-    public String myRatelimitFallback(Integer id,Throwable t)
-    {
+
+    public String myRatelimitFallback(Integer id, Throwable t) {
         return "你被限流了，禁止访问/(ㄒoㄒ)/~~";
     }
 
 
+    @GetMapping(value = "/feign/micrometer/{id}")
+    public String myMicrometer(@PathVariable("id") Integer id) {
+        return payFeignApi.myMicrometer(id);
+    }
 }
