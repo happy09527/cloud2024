@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @createDate: 2024/12/9
  * @description:
  */
-@FeignClient(value = "cloud-payment-service")
+@FeignClient(value = "cloud-gateway")
 public interface PayFeignApi {
     /**
      * 新增一条支付相关流水记录
@@ -71,5 +71,23 @@ public interface PayFeignApi {
      */
     @GetMapping(value = "/pay/micrometer/{id}")
     public String myMicrometer(@PathVariable("id") Integer id);
+
+
+    /**
+     * gateway查询
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/pay/gateway/get/{id}")
+    public ResultData getGatewayPayId(@PathVariable("id") Integer id);
+
+    /**
+     * gateway
+     *
+     * @return
+     */
+    @GetMapping(value = "/pay/gateway/info")
+    public ResultData getGatewayInfo();
 }
 
