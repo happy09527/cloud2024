@@ -34,7 +34,7 @@ public class PayAlibabaController {
         payDTO.setAmount(BigDecimal.valueOf(9.9));
         payDTO.setPayNo("pay:"+ IdUtil.fastUUID());
         payDTO.setUserId(1);
-        int a= 1/0;
+
         return ResultData.success("查询返回值："+payDTO);
     }
     public ResultData handlerBlockHandler(@PathVariable("orderNo") String orderNo, BlockException exception) {
